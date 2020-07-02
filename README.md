@@ -9,4 +9,5 @@ Populate `.env.example` and rename to `.env`
 
 ## Running app
 
+`python app.py`
 
