@@ -19,12 +19,16 @@ pipelines = ['release-antivirus-api',
              ]
 
 
-def milliseconds_to_hours(milliseconds):
+def time_formatter(milliseconds):
     td = datetime.timedelta(milliseconds=milliseconds)
-    return td.days, td.seconds // 3600, (td.seconds // 60) % 60
+    seconds = td.total_seconds()
+    hours = seconds // 3600
+    return f"{hours} hours"
 
 
 with open('output.csv', 'w') as csv_file:
+    all_successful_builds = list()
+    row_count = 0
     fieldnames = ['pipeline', 'run_id', 'duration']
     writer = csv.DictWriter(csv_file, fieldnames=fieldnames)
     writer.writeheader()
@@ -35,6 +39,11 @@ with open('output.csv', 'w') as csv_file:
                                os.getenv('JENKINS_API_TOKEN')))
         builds = ast.literal_eval(r.text)
         successful_builds = list(filter(lambda b: b['result'] == 'SUCCESS', builds['allBuilds']))
+        print(successful_builds)
+        all_successful_builds.extend(successful_builds)
         for sb in successful_builds:
             writer.writerow({'pipeline': pipeline, 'run_id': sb['id'], 'duration': sb['duration']})
-            print(successful_builds)
+
+    print("Total successful builds: " + str(len(all_successful_builds)))
+    average_duration = sum(list(map(lambda x: x['duration'], all_successful_builds))) / len(all_successful_builds)
+    print("Average total runtime: " + str(time_formatter(average_duration)))
