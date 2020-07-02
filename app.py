@@ -7,8 +7,8 @@ import datetime
 import statistics
 
 load_dotenv()
-pipelines = ['release-antivirus-api',
-             'release-admin-frontend',
+pipelines = ['release-admin-frontend',
+             'release-antivirus-api',
              'release-api',
              'release-brief-responses-frontend',
              'release-briefs-frontend',
@@ -28,9 +28,9 @@ def time_formatter(milliseconds):
 
 
 filename = 'output.csv'
+all_successful_builds = list()
 
 with open(filename, 'w') as csv_file:
-    all_successful_builds = list()
     row_count = 0
     fieldnames = ['pipeline', 'run_id', 'timestamp (UNIX)', 'duration (milliseconds)']
     writer = csv.DictWriter(csv_file, fieldnames=fieldnames)
@@ -50,8 +50,9 @@ with open(filename, 'w') as csv_file:
                              'timestamp (UNIX)': sb['timestamp'],
                              'duration (milliseconds)': sb['duration']
                              })
-    print(f"Results written to: {os.getcwd()}/{filename}")
-    print("Total successful builds: " + str(len(all_successful_builds)))
-    duration_list = list(map(lambda x: x['duration'], all_successful_builds))
-    print("Average total runtime: " + time_formatter(statistics.mean(duration_list)))
-    print("Mean total runtime: " + time_formatter(statistics.median_low(duration_list)))
+
+print(f"Results written to: {os.getcwd()}/{filename}")
+print("Total successful builds: " + str(len(all_successful_builds)))
+duration_list = list(map(lambda x: x['duration'], all_successful_builds))
+print("Average total runtime: " + time_formatter(statistics.mean(duration_list)))
+print("Mean total runtime: " + time_formatter(statistics.median_low(duration_list)))
