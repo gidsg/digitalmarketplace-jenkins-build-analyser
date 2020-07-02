@@ -31,7 +31,6 @@ filename = 'output.csv'
 all_successful_builds = list()
 
 with open(filename, 'w') as csv_file:
-    row_count = 0
     fieldnames = ['pipeline', 'run_id', 'timestamp (UNIX)', 'duration (milliseconds)']
     writer = csv.DictWriter(csv_file, fieldnames=fieldnames)
     writer.writeheader()
