@@ -41,14 +41,20 @@ with open(filename, 'w') as csv_file:
                                os.getenv('JENKINS_API_TOKEN')))
         builds = ast.literal_eval(r.text)
         successful_builds = list(filter(lambda b: b['result'] == 'SUCCESS', builds['allBuilds']))
-        print(successful_builds)
+        duration_list = list(map(lambda x: x['duration'], successful_builds))
+
+        # print(successful_builds)
         all_successful_builds.extend(successful_builds)
+        print(f"Results for {pipeline}\n===============")
+        print(f"Average total runtime {time_formatter(statistics.mean(duration_list))}")
+        print(f"Mean total runtime {time_formatter(statistics.median_low(duration_list))}")
         for sb in successful_builds:
             writer.writerow({'pipeline': pipeline,
                              'run_id': sb['id'],
                              'timestamp (UNIX)': sb['timestamp'],
                              'duration (milliseconds)': sb['duration']
                              })
+
 
 print(f"Results written to: {os.getcwd()}/{filename}")
 print("Total successful builds: " + str(len(all_successful_builds)))
